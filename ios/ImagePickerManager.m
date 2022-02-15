@@ -161,6 +161,20 @@ RCT_EXPORT_METHOD(launchImageLibrary:(NSDictionary *)options callback:(RCTRespon
         asset[@"timestamp"] = [self getDateTimeInUTC:phAsset.creationDate];
         asset[@"id"] = phAsset.localIdentifier;
         // Add more extra data here ...
+        CLLocation *location = phAsset.location;
+        if(location){
+            // If horizontal accuracy is negative, lat/long are invalid
+            if(location.horizontalAccuracy >= 0.0){
+                asset[@"latitude"] = @(location.coordinate.latitude);
+                asset[@"longitude"] = @(location.coordinate.longitude);
+            }
+            // If vertical accuracy is 0 or negative, alt is invalid
+            // However, it seems good enough at 0 too
+            if(location.verticalAccuracy >= 0.0){
+                NSLog(@"altitude : %f",location.altitude);
+                asset[@"altitude"] = @(location.altitude);
+            }
+        }
     }
     
     return asset;

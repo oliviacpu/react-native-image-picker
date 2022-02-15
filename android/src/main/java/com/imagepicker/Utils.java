@@ -408,6 +408,9 @@ public class Utils {
 
         if(options.includeExtra) {
           // Add more extra data here ...
+          map.putDouble("latitude", imageMetadata.getLatitude());
+          map.putDouble("longitude", imageMetadata.getLongitude());
+          map.putDouble("altitude", imageMetadata.getAltitude());
           map.putString("timestamp", imageMetadata.getDateTime());
           map.putString("id", fileName);
         }
