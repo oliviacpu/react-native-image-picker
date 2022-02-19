@@ -15,7 +15,7 @@ public class ImageMetadata extends Metadata {
     try {
       InputStream inputStream = context.getContentResolver().openInputStream(uri);
       ExifInterface exif = new ExifInterface(inputStream);
-      String datetimeTag = exif.getAttribute(ExifInterface.TAG_DATETIME);
+      String datetimeTag = exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL);
       double[] latLong = exif.getLatLong();
       double altitude = exif.getAltitude(0);
 
