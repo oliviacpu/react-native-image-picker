@@ -58,5 +58,8 @@
     "targets": [
       "typescript"
     ]
+  },
+  "dependencies": {
+    "@types/node": "^18.0.1"
   }
 }
