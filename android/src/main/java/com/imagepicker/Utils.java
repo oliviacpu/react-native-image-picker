@@ -56,7 +56,7 @@ public class Utils {
 
     public static File createFile(Context reactContext, String fileType) {
         try {
-            String filename = fileNamePrefix  + UUID.randomUUID() + "." + fileType;
+            String filename = fileNamePrefix + UUID.randomUUID() + "." + fileType;
 
             // getCacheDir will auto-clean according to android docs
             File fileDir = reactContext.getCacheDir();
@@ -111,14 +111,15 @@ public class Utils {
         }
     }
 
-    // Make a copy of shared storage files inside app specific storage so that users can access it later.
+    // Make a copy of shared storage files inside app specific storage so that users
+    // can access it later.
     public static Uri getAppSpecificStorageUri(Uri sharedStorageUri, Context context) {
         if (sharedStorageUri == null) {
             return null;
         }
         ContentResolver contentResolver = context.getContentResolver();
         String fileType = getFileTypeFromMime(contentResolver.getType(sharedStorageUri));
-        Uri toUri =  Uri.fromFile(createFile(context, fileType));
+        Uri toUri = Uri.fromFile(createFile(context, fileType));
         copyUri(sharedStorageUri, toUri, contentResolver);
         return toUri;
     }
@@ -128,7 +129,8 @@ public class Utils {
                 || reactContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
     }
 
-    // Opening front camera is not officially supported in android, the below hack is obtained from various online sources
+    // Opening front camera is not officially supported in android, the below hack
+    // is obtained from various online sources
     public static void setFrontCamera(Intent intent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             intent.putExtra("android.intent.extras.CAMERA_FACING", CameraCharacteristics.LENS_FACING_FRONT);
@@ -146,17 +148,18 @@ public class Utils {
             inputStream = reactContext.getContentResolver().openInputStream(uri);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            return new int[]{0, 0};
+            return new int[] { 0, 0 };
         }
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(inputStream,null, options);
-        return new int[]{options.outWidth, options.outHeight};
+        BitmapFactory.decodeStream(inputStream, null, options);
+        return new int[] { options.outWidth, options.outHeight };
     }
 
     static boolean hasPermission(final Activity activity) {
-        final int writePermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        final int writePermission = ActivityCompat.checkSelfPermission(activity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
         return writePermission == PackageManager.PERMISSION_GRANTED ? true : false;
     }
 
@@ -185,7 +188,8 @@ public class Utils {
     }
 
     // Resize image
-    // When decoding a jpg to bitmap all exif meta data will be lost, so make sure to copy orientation exif to new file else image might have wrong orientations
+    // When decoding a jpg to bitmap all exif meta data will be lost, so make sure
+    // to copy orientation exif to new file else image might have wrong orientations
     public static Uri resizeImage(Uri uri, Context context, Options options) {
         try {
             int[] origDimens = getImageDimensions(uri, context);
@@ -197,7 +201,7 @@ public class Utils {
             int[] newDimens = getImageDimensBasedOnConstraints(origDimens[0], origDimens[1], options);
 
             InputStream imageStream = context.getContentResolver().openInputStream(uri);
-            String mimeType =  getMimeTypeFromFileUri(uri);
+            String mimeType = getMimeTypeFromFileUri(uri);
             Bitmap b = BitmapFactory.decodeStream(imageStream);
             b = Bitmap.createScaledBitmap(b, newDimens[0], newDimens[1], true);
             String originalOrientation = getOrientation(uri, context);
@@ -222,9 +226,11 @@ public class Utils {
         return exifInterface.getAttribute(ExifInterface.TAG_ORIENTATION);
     }
 
-    // ExifInterface.saveAttributes is costly operation so don't set exif for unnecessary orientations
+    // ExifInterface.saveAttributes is costly operation so don't set exif for
+    // unnecessary orientations
     static void setOrientation(File file, String orientation, Context context) throws IOException {
-        if (orientation.equals(String.valueOf(ExifInterface.ORIENTATION_NORMAL)) || orientation.equals(String.valueOf(ExifInterface.ORIENTATION_UNDEFINED))) {
+        if (orientation.equals(String.valueOf(ExifInterface.ORIENTATION_NORMAL))
+                || orientation.equals(String.valueOf(ExifInterface.ORIENTATION_UNDEFINED))) {
             return;
         }
         ExifInterface exifInterface = new ExifInterface(file);
@@ -237,7 +243,7 @@ public class Utils {
         int height = origHeight;
 
         if (options.maxWidth == 0 || options.maxHeight == 0) {
-            return new int[]{width, height};
+            return new int[] { width, height };
         }
 
         if (options.maxWidth < width) {
@@ -250,7 +256,7 @@ public class Utils {
             height = options.maxHeight;
         }
 
-        return new int[]{width, height};
+        return new int[] { width, height };
     }
 
     static double getFileSize(Uri uri, Context context) {
@@ -277,8 +283,10 @@ public class Utils {
 
     static Bitmap.CompressFormat getBitmapCompressFormat(String mimeType) {
         switch (mimeType) {
-            case "image/jpeg": return Bitmap.CompressFormat.JPEG;
-            case "image/png": return Bitmap.CompressFormat.PNG;
+            case "image/jpeg":
+                return Bitmap.CompressFormat.JPEG;
+            case "image/png":
+                return Bitmap.CompressFormat.PNG;
         }
         return Bitmap.CompressFormat.JPEG;
     }
@@ -288,9 +296,12 @@ public class Utils {
             return "jpg";
         }
         switch (mimeType) {
-            case "image/jpeg": return "jpg";
-            case "image/png": return "png";
-            case "image/gif": return "gif";
+            case "image/jpeg":
+                return "jpg";
+            case "image/png":
+                return "png";
+            case "image/gif":
+                return "gif";
         }
         return "jpg";
     }
@@ -303,30 +314,36 @@ public class Utils {
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(uri.toString()));
     }
 
-    // Since library users can have many modules in their project, we should respond to onActivityResult only for our request.
+    // Since library users can have many modules in their project, we should respond
+    // to onActivityResult only for our request.
     static boolean isValidRequestCode(int requestCode) {
         switch (requestCode) {
             case REQUEST_LAUNCH_IMAGE_CAPTURE:
             case REQUEST_LAUNCH_VIDEO_CAPTURE:
-            case REQUEST_LAUNCH_LIBRARY: return true;
-            default: return false;
+            case REQUEST_LAUNCH_LIBRARY:
+                return true;
+            default:
+                return false;
         }
     }
 
-    // This library does not require Manifest.permission.CAMERA permission, but if user app declares as using this permission which is not granted, then attempting to use ACTION_IMAGE_CAPTURE|ACTION_VIDEO_CAPTURE will result in a SecurityException.
+    // This library does not require Manifest.permission.CAMERA permission, but if
+    // user app declares as using this permission which is not granted, then
+    // attempting to use ACTION_IMAGE_CAPTURE|ACTION_VIDEO_CAPTURE will result in a
+    // SecurityException.
     // https://issuetracker.google.com/issues/37063818
     public static boolean isCameraPermissionFulfilled(Context context, Activity activity) {
         try {
-             String[] declaredPermissions = context.getPackageManager()
-                     .getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS)
-                     .requestedPermissions;
+            String[] declaredPermissions = context.getPackageManager()
+                    .getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS).requestedPermissions;
 
-             if (declaredPermissions == null) {
-                 return true;
-             }
+            if (declaredPermissions == null) {
+                return true;
+            }
 
             if (Arrays.asList(declaredPermissions).contains(Manifest.permission.CAMERA)
-                    && ActivityCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    && ActivityCompat.checkSelfPermission(activity,
+                            Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 return false;
             }
 
@@ -339,39 +356,40 @@ public class Utils {
     }
 
     static boolean isImageType(Uri uri, Context context) {
-      return Utils.isContentType("image/", uri, context);
+        return Utils.isContentType("image/", uri, context);
     }
 
     static boolean isVideoType(Uri uri, Context context) {
         return Utils.isContentType("video/", uri, context);
     }
 
-  /**
-   * Verifies the content typs of a file URI. A helper function
-   * for isVideoType and isImageType
-   *
-   * @param contentMimeType - "video/" or "image/"
-   * @param uri - file uri
-   * @param context - react context
-   * @return a boolean to determine if file is of specified content type i.e. image or video
-   */
+    /**
+     * Verifies the content typs of a file URI. A helper function
+     * for isVideoType and isImageType
+     *
+     * @param contentMimeType - "video/" or "image/"
+     * @param uri             - file uri
+     * @param context         - react context
+     * @return a boolean to determine if file is of specified content type i.e.
+     *         image or video
+     */
     static boolean isContentType(String contentMimeType, Uri uri, Context context) {
-      final String mimeType = getMimeType(uri, context);
+        final String mimeType = getMimeType(uri, context);
 
-      if(mimeType != null) {
-        return mimeType.contains(contentMimeType);
-      }
+        if (mimeType != null) {
+            return mimeType.contains(contentMimeType);
+        }
 
-      return false;
+        return false;
     }
 
     static @Nullable String getMimeType(Uri uri, Context context) {
-      if (uri.getScheme().equals("file")) {
-        return getMimeTypeFromFileUri(uri);
-      }
+        if (uri.getScheme().equals("file")) {
+            return getMimeTypeFromFileUri(uri);
+        }
 
-      ContentResolver contentResolver = context.getContentResolver();
-      return contentResolver.getType(uri);
+        ContentResolver contentResolver = context.getContentResolver();
+        return contentResolver.getType(uri);
     }
 
     static List<Uri> collectUrisFromData(Intent data) {
@@ -409,13 +427,14 @@ public class Utils {
             map.putString("base64", getBase64String(uri, context));
         }
 
-        if(options.includeExtra) {
-          // Add more extra data here ...
-          map.putDouble("latitude", imageMetadata.getLatitude());
-          map.putDouble("longitude", imageMetadata.getLongitude());
-          map.putDouble("altitude", imageMetadata.getAltitude());
-          map.putString("timestamp", imageMetadata.getDateTime());
-          map.putString("id", fileName);
+        if (options.includeExtra) {
+            // Add more extra data here ...
+            map.putDouble("latitude", imageMetadata.getLatitude());
+            map.putDouble("longitude", imageMetadata.getLongitude());
+            map.putDouble("altitude", imageMetadata.getAltitude());
+            map.putString("timestamp", imageMetadata.getDateTime());
+            map.putString("id", fileName);
+            map.putString("md5", imageMetadata.getMd5());
         }
 
         return map;
@@ -435,10 +454,10 @@ public class Utils {
         map.putInt("width", videoMetadata.getWidth());
         map.putInt("height", videoMetadata.getHeight());
 
-        if(options.includeExtra) {
-          // Add more extra data here ...
-          map.putString("timestamp", videoMetadata.getDateTime());
-          map.putString("id", fileName);
+        if (options.includeExtra) {
+            // Add more extra data here ...
+            map.putString("timestamp", videoMetadata.getDateTime());
+            map.putString("id", fileName);
         }
 
         return map;
@@ -447,7 +466,7 @@ public class Utils {
     static ReadableMap getResponseMap(List<Uri> fileUris, Options options, Context context) throws RuntimeException {
         WritableArray assets = Arguments.createArray();
 
-        for(int i = 0; i < fileUris.size(); ++i) {
+        for (int i = 0; i < fileUris.size(); ++i) {
             Uri uri = fileUris.get(i);
 
             if (isImageType(uri, context)) {
